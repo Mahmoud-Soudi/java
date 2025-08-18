@@ -40,12 +40,14 @@ node {
         }
         
         stage("Push image and update manifest") {
-            // Use Jenkins credentials properly
-            withCredentials([usernamePassword(
-                credentialsId: 'docker-creds', // <-- replace with your Jenkins credentialsId
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS'
-            )]) {
+            // Use the existing docker-username / docker-password credentials
+            withCredentials([
+                usernamePassword(
+                    credentialsId: 'docker-username', // Jenkins ID for Docker username
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )
+            ]) {
                 def docker = new com.iti.docker()
                 docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
                 docker.push("iti-java", "${BUILD_NUMBER}")
