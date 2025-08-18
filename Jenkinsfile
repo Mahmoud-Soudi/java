@@ -43,7 +43,7 @@ node {
             // Use the existing docker-username / docker-password credentials
             withCredentials([
                 usernamePassword(
-                    credentialsId: 'docker-username', // Jenkins ID for Docker username
+                    credentialsId: 'docker-password', // Jenkins ID for Docker username
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )
