@@ -36,21 +36,20 @@ node {
         
         stage("Docker build") {
             def docker = new com.iti.docker()
-            docker.build("iti-java", "${BUILD_NUMBER}")
+            docker.build("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
         }
         
         stage("Push image and update manifest") {
-            // Use the existing docker-username / docker-password credentials
             withCredentials([
                 usernamePassword(
-                    credentialsId: 'docker-password', // Jenkins ID for Docker username
+                    credentialsId: 'docker-username', // Jenkins ID for your Docker Hub creds
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )
             ]) {
                 def docker = new com.iti.docker()
                 docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
-                docker.push("iti-java", "${BUILD_NUMBER}")
+                docker.push("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
                 
                 checkout scmGit(
                     branches: [[name: '*/main']],
@@ -59,11 +58,11 @@ node {
                 )
                 
                 sh """
-                    sed -i 's#image: .*#image: iti-java:${BUILD_NUMBER}#' deployment.yaml
+                    sed -i 's#image: .*#image: mahmoudsoudi/iti-java:${BUILD_NUMBER}#' deployment.yaml
                     git config user.email "jenkins@your-company.com"
                     git config user.name "Jenkins Automation"
                     git add .
-                    git commit -m "Updated image tag to iti-java:${BUILD_NUMBER}" || echo "No changes to commit"
+                    git commit -m "Updated image tag to mahmoudsoudi/iti-java:${BUILD_NUMBER}" || echo "No changes to commit"
                     git push origin main
                 """
             }
