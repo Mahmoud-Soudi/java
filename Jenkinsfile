@@ -12,7 +12,7 @@ node {
     def DOCKER_PASS = credentials('docker-password')
 
     stage("Get code"){
-        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Hassan-Eid-Hassan/java.git']])
+        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/java.git']])
     }
     stage("build app"){
         env.JAVA_HOME = javaHome
@@ -39,7 +39,7 @@ node {
     stage("push java app image"){
         sh "mkdir argocd"
         sh "cd argocd"
-        checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Hassan-Eid-Hassan/argocd.git']])
-        sh "sed -i #        image: .*#        image: iti-java:${BUILD_NUMBER}# iti-dev/deployment.yaml"
+        checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']])
+        sh "sed -i #        image: .*#        image: java:${BUILD_NUMBER}# deployment.yaml"
     }
 }
