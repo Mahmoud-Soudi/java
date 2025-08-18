@@ -40,6 +40,10 @@ node {
     }
     
     stage("update manifest and push to Git"){
+        sh """
+        mkdir argocd
+        cd argocd
+        """
         checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']])
         
         sh "sed -i 's#        image: .*#        image: iti-java:${BUILD_NUMBER}#' deployment.yaml"
