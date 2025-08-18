@@ -6,30 +6,24 @@ properties([
 
 node {
 
-    // Define tools and credentials
     def javaHome = tool name: 'java-11', type: 'jdk'
     def mavenHome = tool name: 'mvn-3-5-4', type: 'maven'
     def DOCKER_USER = credentials('docker-username')
     def DOCKER_PASS = credentials('docker-password')
 
-    // Set environment variables for all stages
-    withEnv([
-        "JAVA_HOME=${javaHome}",
-        "PATH+JAVA=${javaHome}/bin",
-        "PATH+MAVEN=${mavenHome}/bin"
-    ]) {
-        stage("Get code"){
-            checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/java.git']])
-        }
-        
-        stage("build app"){
-            sh 'java -version'
-            sh 'mvn -version'
-            
-            def mavenBuild = new org.iti.mvn()
-            mavenBuild.javaBuild("package install")
-        }
-        
+    stage("Get code"){
+        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Hassan-Eid-Hassan/java.git']])
+    }
+    stage("build app"){
+        env.JAVA_HOME = javaHome
+        env.PATH = "${javaHome}/bin:${mavenHome}/bin:${env.PATH}"
+        sh 'java -version'
+        sh 'mvn -version'
+
+        def mavenBuild = new org.iti.mvn()
+        mavenBuild.javaBuild("package install")
+
+    }
         stage("archive app"){
             archiveArtifacts artifacts: '**/*.jar', followSymlinks: false
         }
