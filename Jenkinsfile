@@ -50,7 +50,7 @@ node {
             checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']])
             
             // Use sed to update the image tag with the BUILD_NUMBER
-            sh "sed -i 's#        image: .*#        image: java:${BUILD_NUMBER}#' deployment.yaml"
+            sh "sed -i 's#        image: .*#        image: iti-java:${BUILD_NUMBER}#' deployment.yaml"
             
             // Configure Git user and commit the changes
             sh 'git config user.email "jenkins@your-company.com"'
