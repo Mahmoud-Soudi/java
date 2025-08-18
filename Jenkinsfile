@@ -33,25 +33,22 @@ node {
         docker.build("iti-java", "${BUILD_NUMBER}")
     }
     
-    stage("push java app image"){
-        def docker = new com.iti.docker()
-        docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
-        docker.push("iti-java", "${BUILD_NUMBER}")
-    }
+    stage("push image and update manifest"){
+    def docker = new com.iti.docker()
+    docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
+    docker.push("iti-java", "${BUILD_NUMBER}")
     
-    stage("update manifest and push to Git"){
-        sh """
-        mkdir argocd
-        cd argocd
-        """
-        checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']])
-        
-        sh "sed -i 's#        image: .*#        image: iti-java:${BUILD_NUMBER}#' deployment.yaml"
-        
-        sh 'git config user.email "jenkins@your-company.com"'
-        sh 'git config user.name "Jenkins Automation"'
-        sh 'git add .'
-        sh 'git commit -m "Updated image tag to java:${BUILD_NUMBER}" || echo "No changes to commit"'
-        sh 'git push origin main'
+    // Checkout the ArgoCD manifest repository
+    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']])
+    
+    // Use triple quotes to pass the entire script to the shell
+    sh """
+        sed -i 's#        image: .*#        image: iti-java:${BUILD_NUMBER}#' deployment.yaml
+        git config user.email "jenkins@your-company.com"
+        git config user.name "Jenkins Automation"
+        git add .
+        git commit -m "Updated image tag to java:${BUILD_NUMBER}" || echo "No changes to commit"
+        git push origin main
+    """
     }
 }
