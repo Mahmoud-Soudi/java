@@ -51,19 +51,18 @@ node {
                 docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
                 docker.push("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
                 
+                // ✅ clean checkout of argoCD repo
                 checkout scmGit(
                     branches: [[name: '*/main']],
-                    extensions: [],
+                    extensions: [[$class: 'WipeWorkspace']], // clear old files
                     userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']]
                 )
                 
                 sh """
-                    git checkout main
-                    git pull origin main
                     sed -i 's#image: .*#image: mahmoudsoudi/iti-java:${BUILD_NUMBER}#' deployment.yaml
                     git config user.email "jenkins@your-company.com"
                     git config user.name "Jenkins Automation"
-                    git add .
+                    git add deployment.yaml
                     git commit -m "Updated image tag to mahmoudsoudi/iti-java:${BUILD_NUMBER}" || echo "No changes to commit"
                     git push origin main
                 """
