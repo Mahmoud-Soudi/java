@@ -47,7 +47,7 @@ node {
                     passwordVariable: 'DOCKER_PASS'
                 ),
                 usernamePassword(
-                    credentialsId: 'github-credentials', // Jenkins GitHub token
+                    credentialsId: 'github-creds', // Jenkins GitHub token
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_PASS'
                 )
