@@ -17,7 +17,7 @@ node {
 
         stage("Get code") {
             checkout scmGit(
-                branches: [[name: '*/master']],
+                branches: [[name: '*/main']],   // ✅ changed to main
                 extensions: [],
                 userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/java.git']]
             )
@@ -42,9 +42,14 @@ node {
         stage("Push image and update manifest") {
             withCredentials([
                 usernamePassword(
-                    credentialsId: 'docker-username', // Jenkins ID for your Docker Hub creds
+                    credentialsId: 'docker-username',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
+                ),
+                usernamePassword(
+                    credentialsId: 'github-creds',   // ✅ GitHub credentials
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_PASS'
                 )
             ]) {
                 def docker = new com.iti.docker()
@@ -52,9 +57,11 @@ node {
                 docker.push("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
                 
                 checkout scmGit(
-                    branches: [[name: '*/main']],
+                    branches: [[name: '*/main']],   // ✅ main branch
                     extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/Mahmoud-Soudi/argoCD.git']]
+                    userRemoteConfigs: [[
+                        url: "https://${GIT_USER}:${GIT_PASS}@github.com/Mahmoud-Soudi/argoCD.git"
+                    ]]
                 )
                 
                 sh """
@@ -63,7 +70,7 @@ node {
                     sed -i 's#image: .*#image: mahmoudsoudi/iti-java:${BUILD_NUMBER}#' deployment.yaml
                     git config user.email "jenkins@your-company.com"
                     git config user.name "Jenkins Automation"
-                    git add .
+                    git add deployment.yaml
                     git commit -m "Updated image tag to mahmoudsoudi/iti-java:${BUILD_NUMBER}" || echo "No changes to commit"
                     git push origin main
                 """
