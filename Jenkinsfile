@@ -46,7 +46,13 @@ node {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )
-            ]) {
+            ]) withCredentials([
+                usernamePassword(
+                    credentialsId: 'github-credentials',   // Jenkins GitHub token
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_PASS'
+                )
+            ]){
                 def docker = new com.iti.docker()
                 docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
                 docker.push("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
