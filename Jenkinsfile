@@ -42,13 +42,12 @@ node {
         stage("Push image and update manifest") {
             withCredentials([
                 usernamePassword(
-                    credentialsId: 'docker-username', // Jenkins ID for your Docker Hub creds
+                    credentialsId: 'docker-username', // Jenkins ID for Docker Hub creds
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
-                )
-            ]) withCredentials([
+                ),
                 usernamePassword(
-                    credentialsId: 'github-credentials',   // Jenkins GitHub token
+                    credentialsId: 'github-credentials', // Jenkins GitHub token
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_PASS'
                 )
