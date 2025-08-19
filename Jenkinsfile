@@ -52,7 +52,7 @@ node {
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_PASS'
                 )
-            ]){
+            ]) {
                 def docker = new com.iti.docker()
                 docker.login("${DOCKER_USER}", "${DOCKER_PASS}")
                 docker.push("mahmoudsoudi/iti-java", "${BUILD_NUMBER}")
@@ -71,6 +71,9 @@ node {
                     git config user.name "Jenkins Automation"
                     git add deployment.yaml
                     git commit -m "Updated image tag to mahmoudsoudi/iti-java:${BUILD_NUMBER}" || echo "No changes to commit"
+
+                    # ✅ Use GitHub token for push
+                    git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/Mahmoud-Soudi/argoCD.git
                     git push origin main
                 """
             }
