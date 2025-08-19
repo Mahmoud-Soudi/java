@@ -58,8 +58,8 @@ node {
                 )
                 
                 sh """
-                    mkdir argocd
-                    cd argocd
+                    git checkout main
+                    git pull origin main
                     sed -i 's#image: .*#image: mahmoudsoudi/iti-java:${BUILD_NUMBER}#' deployment.yaml
                     git config user.email "jenkins@your-company.com"
                     git config user.name "Jenkins Automation"
